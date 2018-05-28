@@ -1,2 +1,0 @@
-# mywebapp
-Java Web Application
