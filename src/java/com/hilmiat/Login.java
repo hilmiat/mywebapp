@@ -8,6 +8,8 @@ package com.hilmiat;
 import com.hilmiat.model.Koneksi;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,6 +21,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  *
@@ -101,9 +104,10 @@ public class Login extends HttpServlet {
         try {
             Connection con = new Koneksi().getKoneksi();
             //sql
-            String sql = "SELECT * FROM user WHERE email = ?";
+            String sql = "SELECT * FROM user WHERE email = ? AND password=?";
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1,email);
+            ps.setString(2,this.hass(password));
             ResultSet rs = ps.executeQuery();
             if(rs.next()){
                 return true;
@@ -125,5 +129,23 @@ public class Login extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    private String hass(String password) {
+        String hasil;
+        try {
+            
+            
+            MessageDigest md;
+            md = MessageDigest.getInstance("md5");
+            md.update(password.getBytes());
+            byte[] digest = md.digest();
+            hasil = DatatypeConverter.printHexBinary(digest);
+            
+            
+        } catch (NoSuchAlgorithmException ex) {
+            hasil = null;
+        }
+        return hasil;
+    }
 
 }
